@@ -14,6 +14,8 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/rubricks", rubricksHandler)
 	router.HandleFunc("/post/id", postIdHandler)
+	router.HandleFunc("/post", createPostHandler)
+	router.HandleFunc("/posts", getArrayPostHandler)
 
 	http.Handle("/",router)
 

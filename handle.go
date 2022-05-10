@@ -23,6 +23,23 @@ func postIdHandler(w http.ResponseWriter, r *http.Request) {
 	result := "error get news?"
 	//fmt.Println(r.Header.Get("Content-Type")) TODO можно добавить этот тип
 	if r.Method == "GET" {
+		var getNews GetNews
+		var unmarshalErr *json.UnmarshalTypeError
+		decoder := json.NewDecoder(r.Body)
+		decoder.DisallowUnknownFields()
+		err := decoder.Decode(&getNews)
+		if err != nil {
+			if errors.As(err, &unmarshalErr) {
+				errorResponse(w, "Bad Request. Wrong Type provided for field "+unmarshalErr.Field, http.StatusBadRequest)
+			} else {
+				errorResponse(w, "Bad Request "+err.Error(), http.StatusBadRequest)
+			}
+			return
+		}
+
+		db_global.GetContext(context.TODO(), &result, `select * FROM news.news_get_news_with_id($1)`,
+			getNews.NewsId)
+	} else if r.Method == "DELETE" {
 		var deleteNews DeleteNews
 		var unmarshalErr *json.UnmarshalTypeError
 		decoder := json.NewDecoder(r.Body)
@@ -36,24 +53,58 @@ func postIdHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-
-		db_global.GetContext(context.TODO(), &result, `select * FROM news.news_get_news_with_id($1)`,
-			deleteNews.newsId)
-		fmt.Println(deleteNews.newsId)
-		fmt.Println(r.Body)
-	} else if r.Method == "DELETE" {
 		result_delete := ""
-		db_global.GetContext(context.TODO(), &result_delete, `select * FROM news.news_delete_news(4)`)
+		db_global.GetContext(context.TODO(), &result_delete, `select * FROM news.news_delete_news($1)`,
+			deleteNews.NewsId)
 		if result_delete == "true" {
 			result = "true"
 		} else {
 			result = "false"
 		}
+	} else if r.Method == "PUT" {
+
 	}
 
 	fmt.Fprint(w, result)
 
 
+}
+
+func createPostHandler(w http.ResponseWriter, r *http.Request) {
+	result := "error create post?"
+	var createNews CreateNews
+	var unmarshalErr *json.UnmarshalTypeError
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(&createNews)
+	if err != nil {
+		if errors.As(err, &unmarshalErr) {
+			errorResponse(w, "Bad Request. Wrong Type provided for field "+unmarshalErr.Field, http.StatusBadRequest)
+		} else {
+			errorResponse(w, "Bad Request "+err.Error(), http.StatusBadRequest)
+		}
+		return
+	}
+	fmt.Println(createNews)
+	//TODO доделать создание новости
+	/*
+	result_delete := ""
+
+	db_global.GetContext(context.TODO(), &result_delete, `select * FROM news.news_delete_news($1)`,
+		deleteNews.NewsId)*/
+
+	fmt.Fprint(w, result)
+}
+
+func getArrayPostHandler(w http.ResponseWriter, r *http.Request) {
+	rubrick := r.URL.Query().Get("rubrick")
+	startDate := r.URL.Query().Get("startDate")
+	endDate := r.URL.Query().Get("endDate")
+	search :=  r.URL.Query().Get("search")
+	result := "error get array?"
+	db_global.GetContext(context.TODO(), &result, `select * FROM news.news_get_array_news($1, $2, $3, $4)`,
+		rubrick, startDate, endDate, search)
+	fmt.Fprint(w, result)
 }
 
 func errorResponse(w http.ResponseWriter, message string, httpStatusCode int) {
