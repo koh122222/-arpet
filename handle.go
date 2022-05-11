@@ -104,6 +104,8 @@ func createPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getArrayPostHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	rubrick := r.URL.Query().Get("rubrick")
 	startDate := r.URL.Query().Get("startDate")
 	endDate := r.URL.Query().Get("endDate")
