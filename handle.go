@@ -23,6 +23,8 @@ func rubricksHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func postIdHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	result := "error get news?"
 	//fmt.Println(r.Header.Get("Content-Type")) TODO можно добавить этот тип
 	if r.Method == "GET" {
@@ -74,6 +76,8 @@ func postIdHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createPostHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	result := "error create post?"
 	var createNews CreateNews
 	var unmarshalErr *json.UnmarshalTypeError
