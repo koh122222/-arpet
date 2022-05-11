@@ -14,6 +14,9 @@ func rubricksHandler(w http.ResponseWriter, r *http.Request) {
 	//response := fmt.Sprintf("Product %s", id)
 
 	//fmt.Fprint(w, r.Method)
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	result := "error get rubricks?"
 	db_global.GetContext(context.TODO(), &result, `select * FROM news.news_get_rubricks()`)
 	fmt.Fprint(w, result)
