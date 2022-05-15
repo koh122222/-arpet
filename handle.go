@@ -15,16 +15,14 @@ func rubricksHandler(w http.ResponseWriter, r *http.Request) {
 
 	//fmt.Fprint(w, r.Method)
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	applyPolicies(&w)
 	result := "error get rubricks?"
 	db_global.GetContext(context.TODO(), &result, `select * FROM news.news_get_rubricks()`)
 	fmt.Fprint(w, result)
 }
 
 func postIdHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	applyPolicies(&w)
 	result := "error get news?"
 	//fmt.Println(r.Header.Get("Content-Type")) TODO можно добавить этот тип
 	if r.Method == "GET" {
@@ -76,8 +74,7 @@ func postIdHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createPostHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	applyPolicies(&w)
 	result := "error create post?"
 	var createNews CreateNews
 	var unmarshalErr *json.UnmarshalTypeError
@@ -104,8 +101,7 @@ func createPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getArrayPostHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	applyPolicies(&w)
 	rubrick := r.URL.Query().Get("rubrick")
 	startDate := r.URL.Query().Get("startDate")
 	endDate := r.URL.Query().Get("endDate")
