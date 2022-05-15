@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func rubricksHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,6 +21,7 @@ func rubricksHandler(w http.ResponseWriter, r *http.Request) {
 	db_global.GetContext(context.TODO(), &result, `select * FROM news.news_get_rubricks()`)
 	fmt.Fprint(w, result)
 }
+
 
 func postIdHandler(w http.ResponseWriter, r *http.Request) {
 	applyPolicies(&w)
@@ -91,12 +93,18 @@ func createPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(createNews)
 	//TODO доделать создание новости
-	/*
-	result_delete := ""
 
-	db_global.GetContext(context.TODO(), &result_delete, `select * FROM news.news_delete_news($1)`,
-		deleteNews.NewsId)*/
+	result_create := ""
 
+	fmt.Println(createNews.Rubrick, createNews.AvaImg, createNews.Title, time.Now().Format("2006-01-02"))
+	db_global.GetContext(context.TODO(), &result_create, `select * FROM news.create_new_news($1, $2, $3, $4)`,
+		createNews.Rubrick, createNews.AvaImg, createNews.Title, time.Now().Format("2006-01-02"))
+	//TODO В идеале сделать бы это одним запросом...
+
+	for _, value := range createNews.Content_ {
+		temp_return := ""
+		db_global.GetContext(context.TODO(), &temp_return, `select * FROM news.news_add_content($1, $2, $3)`, result_create, value.Tag, value.Text)
+	}
 	fmt.Fprint(w, result)
 }
 
